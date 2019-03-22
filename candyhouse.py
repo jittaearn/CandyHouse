@@ -3,7 +3,7 @@ import arcade
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 
-class CandyHouse:
+class CandyHouse(arcade.Window):
     def __init__(self, width, height):
         super().__init__(width, height)
  
