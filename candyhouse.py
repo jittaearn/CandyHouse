@@ -25,6 +25,9 @@ class BreadWindow(arcade.Window):
     def on_key_press(self, key, key_modifiers):
          self.world.on_key_press(key, key_modifiers)
 
+    def on_key_release(self, key, key_modifiers):
+         self.world.on_key_release(key, key_modifiers)
+
 
 class ModelSprite(arcade.Sprite):
     def __init__(self, *args, **kwargs):

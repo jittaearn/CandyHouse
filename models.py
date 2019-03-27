@@ -13,7 +13,6 @@ DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_DOWN: (0,-1),
                 DIR_LEFT: (-1,0) }
 
-
 class Gretel:
     def __init__(self, world, x, y):
         self.world = world
@@ -45,3 +44,8 @@ class World:
             self.gretel.direction = DIR_LEFT
         if key == arcade.key.RIGHT:
             self.gretel.direction = DIR_RIGHT
+        if key == arcade.key.DOWN:
+            self.gretel.direction = DIR_DOWN
+
+    def on_key_release(self, key, key_modifers):
+        self.gretel.direction = DIR_STILL
