@@ -6,7 +6,7 @@ DIR_UP = 1
 DIR_RIGHT = 2
 DIR_DOWN = 3
 DIR_LEFT = 4
-MOVEMENT_SPEED = 2
+MOVEMENT_SPEED = 3
  
 DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_UP: (0,1),
@@ -88,12 +88,13 @@ class BreadWall:
                      '#                       #',
                      '#                       #',
                      '#                       #',
+                     '#---------------   -----#',
                      '#                       #',
                      '#                       #',
+                     '#--   ------------------#',
                      '#                       #',
                      '#                       #',
-                     '#                       #',
-                     '#                       #',
+                     '#---------   -----------#',
                      '#                       #',
                      '#                       #',
                      '#                       #',
@@ -101,5 +102,11 @@ class BreadWall:
         self.height = len(self.map)
         self.width = len(self.map[0])
 
-    def has_wall_at(self, r, c):
+    def has_breadwall_at(self, r, c):
         return self.map[r][c] == '#'
+
+    def has_candywall_at(self, r, c):
+        return self.map[r][c] == '-'
+
+    def has_marblewall_at(self, r, c):
+        return self.map[r][c] == '.'

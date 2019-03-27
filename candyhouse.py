@@ -60,16 +60,24 @@ class BreadWallDrawer():
         self.width = self.breadwall.width
         self.height = self.breadwall.height
         self.breadwall_sprite = arcade.Sprite('images/breadwall.png')
+        self.candywall_sprite = arcade.Sprite('images/candywall.png')
+        self.marblewall_sprite = arcade.Sprite('images/marblewall.png')
 
     def draw(self):
         for r in range(self.height):
             for c in range(self.width):
                 x = c * 40 + 20;
-                y = r * 40 + 60;
+                y = r * 40 + 25;
  
-                if self.breadwall.has_wall_at(r,c):
+                if self.breadwall.has_breadwall_at(r,c):
                     self.breadwall_sprite.set_position(x,y)
                     self.breadwall_sprite.draw()
+                elif self.breadwall.has_candywall_at(r,c):
+                    self.candywall_sprite.set_position(x,y)
+                    self.candywall_sprite.draw()
+                elif self.breadwall.has_marblewall_at(r,c):
+                    self.marblewall_sprite.set_position(x,y)
+                    self.marblewall_sprite.draw()
 
 def main():
     window = BreadWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
