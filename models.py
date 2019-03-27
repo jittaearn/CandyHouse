@@ -27,15 +27,31 @@ class Gretel:
     def update(self, delta):
         self.move(self.direction)
 
+class Hanzel:
+    def __init__(self, world, x, y):
+        self.world = world
+        self.x = x
+        self.y = y
+        self.direction = DIR_STILL
+ 
+    def move(self, direction):
+        self.x += DIR_OFFSETS[direction][0]
+        self.y += DIR_OFFSETS[direction][1]
+ 
+    def update(self, delta):
+        self.move(self.direction)
+
 class World:
     def __init__(self, width, height):
         self.width = width
         self.height = height
  
         self.gretel = Gretel(self, width // 2, height // 2)
+        self.hanzel = Hanzel(self, width // 2, height // 2)
  
     def update(self, delta):
         self.gretel.update(delta)
+        self.hanzel.update(delta)
 
     def on_key_press(self, key, key_modifiers):
         if key == arcade.key.UP:
@@ -47,5 +63,15 @@ class World:
         if key == arcade.key.DOWN:
             self.gretel.direction = DIR_DOWN
 
+        if key == arcade.key.W:
+            self.hanzel.direction = DIR_UP
+        if key == arcade.key.A:
+            self.hanzel.direction = DIR_LEFT
+        if key == arcade.key.D:
+            self.hanzel.direction = DIR_RIGHT
+        if key == arcade.key.S:
+            self.hanzel.direction = DIR_DOWN
+
     def on_key_release(self, key, key_modifers):
         self.gretel.direction = DIR_STILL
+        self.hanzel.direction = DIR_STILL

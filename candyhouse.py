@@ -11,9 +11,13 @@ class BreadWindow(arcade.Window):
         arcade.set_background_color(arcade.color.CREAM)
  
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
+
         self.gretel_sprite = ModelSprite('images/gretel.png',
                                          model=self.world.gretel)
- 
+
+        self.hanzel_sprite = ModelSprite('images/hanzel.png',
+                                         model=self.world.hanzel)
+
     def update(self, delta):
         self.world.update(delta)
  
@@ -21,6 +25,8 @@ class BreadWindow(arcade.Window):
         arcade.start_render()
  
         self.gretel_sprite.draw()
+
+        self.hanzel_sprite.draw()
 
     def on_key_press(self, key, key_modifiers):
          self.world.on_key_press(key, key_modifiers)
