@@ -61,7 +61,10 @@ class BreadWallDrawer():
         self.height = self.breadwall.height
         self.breadwall_sprite = arcade.Sprite('images/breadwall.png')
         self.candywall_sprite = arcade.Sprite('images/candywall.png')
-        self.marblewall_sprite = arcade.Sprite('images/marblewall.png')
+        # self.marblewall_sprite = arcade.Sprite('images/marblewall.png')
+        self.chocolava_sprite = arcade.Sprite('images/chocolava.png')
+        self.chocolavacurve_sprite = arcade.Sprite('images/chocolavacurve.png')
+        self.chocolavacountercurve_sprite = arcade.Sprite('images/chocolavacountercurve.png')
 
     def draw(self):
         for r in range(self.height):
@@ -75,9 +78,18 @@ class BreadWallDrawer():
                 elif self.breadwall.has_candywall_at(r,c):
                     self.candywall_sprite.set_position(x,y)
                     self.candywall_sprite.draw()
-                elif self.breadwall.has_marblewall_at(r,c):
-                    self.marblewall_sprite.set_position(x,y)
-                    self.marblewall_sprite.draw()
+                # elif self.breadwall.has_marblewall_at(r,c):
+                #     self.marblewall_sprite.set_position(x,y)
+                #     self.marblewall_sprite.draw()
+                elif self.breadwall.has_chocolava_at(r,c):
+                    self.chocolava_sprite.set_position(x,y)
+                    self.chocolava_sprite.draw()
+                elif self.breadwall.has_chocolavacurve_at(r,c):
+                    self.chocolavacurve_sprite.set_position(x,y)
+                    self.chocolavacurve_sprite.draw()
+                elif self.breadwall.has_chocolavacountercurve_at(r,c):
+                    self.chocolavacountercurve_sprite.set_position(x,y)
+                    self.chocolavacountercurve_sprite.draw()
 
 def main():
     window = BreadWindow(SCREEN_WIDTH, SCREEN_HEIGHT)

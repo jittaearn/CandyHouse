@@ -80,6 +80,8 @@ class World:
 class BreadWall:
     def __init__(self, world):
         self.map = [ '#########################',
+                     '#lllllllllllllllllllllll#',
+                     '# clw clw  clw  clw     #',
                      '#                       #',
                      '#                       #',
                      '#                       #',
@@ -88,15 +90,13 @@ class BreadWall:
                      '#                       #',
                      '#                       #',
                      '#                       #',
-                     '#---------------   -----#',
+                     '#---------------  ------#',
                      '#                       #',
                      '#                       #',
-                     '#--   ------------------#',
+                     '#--  -------------------#',
                      '#                       #',
                      '#                       #',
-                     '#---------   -----------#',
-                     '#                       #',
-                     '#                       #',
+                     '#----------  -----------#',
                      '#                       #',
                      '#########################',]
         self.height = len(self.map)
@@ -108,5 +108,11 @@ class BreadWall:
     def has_candywall_at(self, r, c):
         return self.map[r][c] == '-'
 
-    def has_marblewall_at(self, r, c):
-        return self.map[r][c] == '.'
+    def has_chocolava_at(self, r, c):
+        return self.map[r][c] == 'l'
+
+    def has_chocolavacurve_at(self, r, c):
+        return self.map[r][c] == 'c'
+
+    def has_chocolavacountercurve_at(self, r, c):
+        return self.map[r][c] == 'w'
