@@ -22,6 +22,9 @@ class BreadWindow(arcade.Window):
  
         self.gretel_sprite.draw()
 
+    def on_key_press(self, key, key_modifiers):
+         self.world.on_key_press(key, key_modifiers)
+
 
 class ModelSprite(arcade.Sprite):
     def __init__(self, *args, **kwargs):
