@@ -46,9 +46,9 @@ class World:
     def __init__(self, width, height):
         self.width = width
         self.height = height
- 
         self.gretel = Gretel(self, width // 2, height // 2)
         self.hanzel = Hanzel(self, width // 2, height // 2)
+        self.breadwall = BreadWall(self)
  
     def update(self, delta):
         self.gretel.update(delta)
@@ -76,3 +76,30 @@ class World:
     def on_key_release(self, key, key_modifers):
         self.gretel.direction = DIR_STILL
         self.hanzel.direction = DIR_STILL
+
+class BreadWall:
+    def __init__(self, world):
+        self.map = [ '#########################',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#                       #',
+                     '#########################',]
+        self.height = len(self.map)
+        self.width = len(self.map[0])
+
+    def has_wall_at(self, r, c):
+        return self.map[r][c] == '#'
