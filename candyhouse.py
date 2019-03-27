@@ -7,21 +7,13 @@ SCREEN_HEIGHT = 800
 class BreadWindow(arcade.Window):
     def __init__(self, width, height):
         super().__init__(width, height)
- 
         arcade.set_background_color(arcade.color.CREAM)
- 
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-
         self.gretel_sprite = ModelSprite('images/gretel.png',
                                          model=self.world.gretel)
-
         self.hanzel_sprite = ModelSprite('images/hanzel.png',
                                          model=self.world.hanzel)
-
         self.breadwall_drawer = BreadWallDrawer(self.world.breadwall)
-
-        # self.witch_sprite = ModelSprite('images/witch.png',
-        #                                  model=self.world.witch)
 
     def update(self, delta):
         self.world.update(delta)
@@ -32,18 +24,16 @@ class BreadWindow(arcade.Window):
         self.gretel_sprite.draw()
         self.hanzel_sprite.draw()
 
-
     def on_key_press(self, key, key_modifiers):
-         self.world.on_key_press(key, key_modifiers)
+         self.world.on_key_press_gretel(key, key_modifiers)
+         self.world.on_key_press_hanzel(key, key_modifiers)
 
     def on_key_release(self, key, key_modifiers):
          self.world.on_key_release(key, key_modifiers)
 
-
 class ModelSprite(arcade.Sprite):
     def __init__(self, *args, **kwargs):
         self.model = kwargs.pop('model', None)
- 
         super().__init__(*args, **kwargs)
  
     def sync_with_model(self):
@@ -61,7 +51,8 @@ class BreadWallDrawer():
         self.height = self.breadwall.height
         self.breadwall_sprite = arcade.Sprite('images/breadwall.png')
         self.candywall_sprite = arcade.Sprite('images/candywall.png')
-        # self.marblewall_sprite = arcade.Sprite('images/marblewall.png')
+        self.candywall2_sprite = arcade.Sprite('images/candywall2.png')
+        self.candywall3_sprite = arcade.Sprite('images/candywall3.png')
         self.chocolava_sprite = arcade.Sprite('images/chocolava.png')
         self.chocolavacurve_sprite = arcade.Sprite('images/chocolavacurve.png')
         self.chocolavacountercurve_sprite = arcade.Sprite('images/chocolavacountercurve.png')
@@ -78,9 +69,12 @@ class BreadWallDrawer():
                 elif self.breadwall.has_candywall_at(r,c):
                     self.candywall_sprite.set_position(x,y)
                     self.candywall_sprite.draw()
-                # elif self.breadwall.has_marblewall_at(r,c):
-                #     self.marblewall_sprite.set_position(x,y)
-                #     self.marblewall_sprite.draw()
+                elif self.breadwall.has_candywall2_at(r,c):
+                    self.candywall2_sprite.set_position(x,y)
+                    self.candywall2_sprite.draw()
+                elif self.breadwall.has_candywall3_at(r,c):
+                    self.candywall3_sprite.set_position(x,y)
+                    self.candywall3_sprite.draw()
                 elif self.breadwall.has_chocolava_at(r,c):
                     self.chocolava_sprite.set_position(x,y)
                     self.chocolava_sprite.draw()

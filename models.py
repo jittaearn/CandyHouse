@@ -54,7 +54,7 @@ class World:
         self.gretel.update(delta)
         self.hanzel.update(delta)
 
-    def on_key_press(self, key, key_modifiers):
+    def on_key_press_gretel(self, key, key_modifiers):
         if key == arcade.key.UP:
             self.gretel.direction = DIR_UP
         if key == arcade.key.LEFT:
@@ -64,6 +64,7 @@ class World:
         if key == arcade.key.DOWN:
             self.gretel.direction = DIR_DOWN
 
+    def on_key_press_hanzel(self, key, key_modifiers):
         if key == arcade.key.W:
             self.hanzel.direction = DIR_UP
         if key == arcade.key.A:
@@ -79,26 +80,26 @@ class World:
 
 class BreadWall:
     def __init__(self, world):
-        self.map = [ '#########################',
+        self.map = [ '                         ',
+                     '#########################',
                      '#lllllllllllllllllllllll#',
-                     '# clw clw  clw  clw     #',
+                     '#cwcllwcwcllwcwcwcllwcwc#',
+                     '#                 ======#',
+                     '#               ==      #',
+                     '#                       #',
+                     '#                       #',
+                     '#__  ___________________#',
+                     '#                       #',
+                     '#                       #',
+                     '#_________________  ____#',
+                     '#                       #',
+                     '#                       #',
+                     '#____  _________________#',
                      '#                       #',
                      '#                       #',
                      '#                       #',
-                     '#                       #',
-                     '#                       #',
-                     '#                       #',
-                     '#                       #',
-                     '#                       #',
-                     '#---------------  ------#',
-                     '#                       #',
-                     '#                       #',
-                     '#--  -------------------#',
-                     '#                       #',
-                     '#                       #',
-                     '#----------  -----------#',
-                     '#                       #',
-                     '#########################',]
+                     '#########################',
+                     '                         ',]
         self.height = len(self.map)
         self.width = len(self.map[0])
 
@@ -107,6 +108,12 @@ class BreadWall:
 
     def has_candywall_at(self, r, c):
         return self.map[r][c] == '-'
+    
+    def has_candywall2_at(self, r, c):
+        return self.map[r][c] == '='
+
+    def has_candywall3_at(self, r, c):
+        return self.map[r][c] == '_'
 
     def has_chocolava_at(self, r, c):
         return self.map[r][c] == 'l'
