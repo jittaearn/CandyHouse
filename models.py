@@ -6,6 +6,7 @@ DIR_UP = 1
 DIR_RIGHT = 2
 DIR_DOWN = 3
 DIR_LEFT = 4
+MOVEMENT_SPEED = 2
  
 DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_UP: (0,1),
@@ -21,8 +22,8 @@ class Gretel:
         self.direction = DIR_STILL
  
     def move(self, direction):
-        self.x += DIR_OFFSETS[direction][0]
-        self.y += DIR_OFFSETS[direction][1]
+        self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
+        self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
  
     def update(self, delta):
         self.move(self.direction)
@@ -35,8 +36,8 @@ class Hanzel:
         self.direction = DIR_STILL
  
     def move(self, direction):
-        self.x += DIR_OFFSETS[direction][0]
-        self.y += DIR_OFFSETS[direction][1]
+        self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
+        self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
  
     def update(self, delta):
         self.move(self.direction)

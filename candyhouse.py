@@ -18,6 +18,9 @@ class BreadWindow(arcade.Window):
         self.hanzel_sprite = ModelSprite('images/hanzel.png',
                                          model=self.world.hanzel)
 
+        # self.witch_sprite = ModelSprite('images/witch.png',
+        #                                  model=self.world.witch)
+
     def update(self, delta):
         self.world.update(delta)
  
