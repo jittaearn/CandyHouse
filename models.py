@@ -123,3 +123,4 @@ class BreadWall:
 
     def has_chocolavacountercurve_at(self, r, c):
         return self.map[r][c] == 'w'
+
