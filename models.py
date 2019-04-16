@@ -29,6 +29,21 @@ class Gretel:
  
     def update(self, delta):
         self.move(self.direction)
+        self.check_dots()
+        
+    def check_walls(self, direction):
+        new_r = self.get_row() + DIR_OFFSETS[direction][1]
+        new_c = self.get_col() + DIR_OFFSETS[direction][0]
+        return not self.maze.has_wall_at(new_r, new_c)
+ 
+    def check_dots(self):
+        pass
+
+    def get_row(self):
+        return (self.y - self.block_size) // self.block_size
+ 
+    def get_col(self):
+        return self.x // self.block_size
 
 class Hanzel:
     def __init__(self, world, x, y, breadwall, block_size):
@@ -45,6 +60,21 @@ class Hanzel:
  
     def update(self, delta):
         self.move(self.direction)
+        self.check_dots()
+
+    def check_walls(self, direction):
+        new_r = self.get_row() + DIR_OFFSETS[direction][1]
+        new_c = self.get_col() + DIR_OFFSETS[direction][0]
+        return not self.maze.has_wall_at(new_r, new_c)
+ 
+    def check_dots(self):
+        pass
+    
+    def get_row(self):
+        return (self.y - self.block_size) // self.block_size
+ 
+    def get_col(self):
+        return self.x // self.block_size
 
 class World:
     def __init__(self, width, height, block_size):
