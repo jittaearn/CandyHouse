@@ -3,12 +3,13 @@ from models import World, Gretel
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
+BLOCK_SIZE = 60
 
 class BreadWindow(arcade.Window):
     def __init__(self, width, height):
         super().__init__(width, height)
         arcade.set_background_color(arcade.color.CREAM)
-        self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT, BLOCK_SIZE)
         self.gretel_sprite = ModelSprite('images/gretel.png',
                                          model=self.world.gretel)
         self.hanzel_sprite = ModelSprite('images/hanzel.png',

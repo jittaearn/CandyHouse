@@ -6,7 +6,7 @@ DIR_UP = 1
 DIR_RIGHT = 2
 DIR_DOWN = 3
 DIR_LEFT = 4
-MOVEMENT_SPEED = 3
+MOVEMENT_SPEED = 4
  
 DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_UP: (0,1),
@@ -15,11 +15,13 @@ DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_LEFT: (-1,0) }
 
 class Gretel:
-    def __init__(self, world, x, y):
+    def __init__(self, world, x, y, breadwall, block_size):
         self.world = world
         self.x = x
         self.y = y
         self.direction = DIR_STILL
+        self.breadwall = breadwall
+        self.block_size = block_size
  
     def move(self, direction):
         self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
@@ -29,11 +31,13 @@ class Gretel:
         self.move(self.direction)
 
 class Hanzel:
-    def __init__(self, world, x, y):
+    def __init__(self, world, x, y, breadwall, block_size):
         self.world = world
         self.x = x
         self.y = y
         self.direction = DIR_STILL
+        self.breadwall = breadwall
+        self.block_size = block_size
  
     def move(self, direction):
         self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
@@ -43,12 +47,17 @@ class Hanzel:
         self.move(self.direction)
 
 class World:
-    def __init__(self, width, height):
+    def __init__(self, width, height, block_size):
         self.width = width
         self.height = height
-        self.gretel = Gretel(self, width // 2, height // 2)
-        self.hanzel = Hanzel(self, width // 2, height // 2)
         self.breadwall = BreadWall(self)
+        self.block_size = block_size
+        self.gretel = Gretel(self, 60, 100,
+                             self.breadwall,
+                             self.block_size)
+        self.hanzel = Hanzel(self, 60, 100,
+                             self.breadwall,
+                             self.block_size)
  
     def update(self, delta):
         self.gretel.update(delta)
