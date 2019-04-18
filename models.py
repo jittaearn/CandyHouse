@@ -15,6 +15,10 @@ DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_LEFT: (-1,0) }
 
 class Gretel:
+    GRAVITY = 1
+    STARTING_VELOCITY = 10
+    JUMPING_VELOCITY = 10
+
     def __init__(self, world, x, y, breadwall, block_size):
         self.world = world
         self.x = x
@@ -22,19 +26,25 @@ class Gretel:
         self.direction = DIR_STILL
         self.breadwall = breadwall
         self.block_size = block_size
+        self.vy = Gretel.STARTING_VELOCITY
  
     def move(self, direction):
         self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
         self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
+
+    def jump(self):
+        self.vy = Gretel.JUMPING_VELOCITY
  
     def update(self, delta):
         self.move(self.direction)
+        self.y += self.vy
+        self.vy -= Gretel.GRAVITY
         self.check_dots()
         
     def check_walls(self, direction):
         new_r = self.get_row() + DIR_OFFSETS[direction][1]
         new_c = self.get_col() + DIR_OFFSETS[direction][0]
-        return not self.maze.has_wall_at(new_r, new_c)
+        return not self.breadwall.has_breadwall_at(new_r, new_c)
  
     def check_dots(self):
         pass
@@ -46,26 +56,36 @@ class Gretel:
         return self.x // self.block_size
 
 class Hanzel:
+    GRAVITY = 1
+    STARTING_VELOCITY = 0
+    JUMPING_VELOCITY = 10
+
     def __init__(self, world, x, y, breadwall, block_size):
         self.world = world
         self.x = x
         self.y = y
         self.direction = DIR_STILL
+        self.vy = Hanzel.STARTING_VELOCITY
         self.breadwall = breadwall
         self.block_size = block_size
  
     def move(self, direction):
         self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
         self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
+
+    def jump(self):
+        self.vy = Hanzel.JUMPING_VELOCITY
  
     def update(self, delta):
         self.move(self.direction)
+        self.y += self.vy
+        self.vy -= Hanzel.GRAVITY
         self.check_dots()
 
     def check_walls(self, direction):
         new_r = self.get_row() + DIR_OFFSETS[direction][1]
         new_c = self.get_col() + DIR_OFFSETS[direction][0]
-        return not self.maze.has_wall_at(new_r, new_c)
+        return not self.breadwall.has_breadwall_at(new_r, new_c)
  
     def check_dots(self):
         pass
@@ -95,7 +115,7 @@ class World:
 
     def on_key_press_gretel(self, key, key_modifiers):
         if key == arcade.key.UP:
-            self.gretel.direction = DIR_UP
+            self.gretel.jump()
         if key == arcade.key.LEFT:
             self.gretel.direction = DIR_LEFT
         if key == arcade.key.RIGHT:
@@ -105,7 +125,7 @@ class World:
 
     def on_key_press_hanzel(self, key, key_modifiers):
         if key == arcade.key.W:
-            self.hanzel.direction = DIR_UP
+            self.hanzel.jump()
         if key == arcade.key.A:
             self.hanzel.direction = DIR_LEFT
         if key == arcade.key.D:

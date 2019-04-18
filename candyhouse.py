@@ -1,5 +1,5 @@
 import arcade
-from models import World, Gretel
+from models import World, Gretel, Hanzel
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
