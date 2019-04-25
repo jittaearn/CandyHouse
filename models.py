@@ -15,18 +15,18 @@ DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_LEFT: (-1,0) }
 
 class Gretel:
-    GRAVITY = 1
-    STARTING_VELOCITY = 10
+    GRAVITY = -1
+    MAX_HEIGHT = 10
     JUMPING_VELOCITY = 10
 
-    def __init__(self, world, x, y, breadwall, block_size):
+    def __init__(self, world, x, y, breadwall):
         self.world = world
         self.x = x
         self.y = y
         self.direction = DIR_STILL
+        self.vy = Gretel.MAX_HEIGHT
         self.breadwall = breadwall
-        self.block_size = block_size
-        self.vy = Gretel.STARTING_VELOCITY
+
  
     def move(self, direction):
         self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
@@ -38,36 +38,21 @@ class Gretel:
     def update(self, delta):
         self.move(self.direction)
         self.y += self.vy
-        self.vy -= Gretel.GRAVITY
-        self.check_dots()
-        
-    def check_walls(self, direction):
-        new_r = self.get_row() + DIR_OFFSETS[direction][1]
-        new_c = self.get_col() + DIR_OFFSETS[direction][0]
-        return not self.breadwall.has_breadwall_at(new_r, new_c)
- 
-    def check_dots(self):
-        pass
-
-    def get_row(self):
-        return (self.y - self.block_size) // self.block_size
- 
-    def get_col(self):
-        return self.x // self.block_size
+        if self.vy >= 0:
+            self.vy += Gretel.GRAVITY
 
 class Hanzel:
-    GRAVITY = 1
-    STARTING_VELOCITY = 0
+    GRAVITY = -1
+    MAX_HEIGHT = 10
     JUMPING_VELOCITY = 10
 
-    def __init__(self, world, x, y, breadwall, block_size):
+    def __init__(self, world, x, y, breadwall):
         self.world = world
         self.x = x
         self.y = y
         self.direction = DIR_STILL
-        self.vy = Hanzel.STARTING_VELOCITY
+        self.vy = Hanzel.MAX_HEIGHT
         self.breadwall = breadwall
-        self.block_size = block_size
  
     def move(self, direction):
         self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
@@ -79,36 +64,38 @@ class Hanzel:
     def update(self, delta):
         self.move(self.direction)
         self.y += self.vy
-        self.vy -= Hanzel.GRAVITY
-        self.check_dots()
+        if self.vy >= 0:
+            self.vy += Hanzel.GRAVITY
 
-    def check_walls(self, direction):
-        new_r = self.get_row() + DIR_OFFSETS[direction][1]
-        new_c = self.get_col() + DIR_OFFSETS[direction][0]
-        return not self.breadwall.has_breadwall_at(new_r, new_c)
- 
-    def check_dots(self):
-        pass
+class Platform:
+    def __init__(self, world, x, y):
+        self.world = world
+        self.x = x
+        self.y = y
     
-    def get_row(self):
-        return (self.y - self.block_size) // self.block_size
- 
-    def get_col(self):
-        return self.x // self.block_size
+    def top(self):
+        return self.y + 40
 
 class World:
-    def __init__(self, width, height, block_size):
+    def __init__(self, width, height):
         self.width = width
         self.height = height
         self.breadwall = BreadWall(self)
-        self.block_size = block_size
         self.gretel = Gretel(self, 60, 100,
-                             self.breadwall,
-                             self.block_size)
+                             self.breadwall)
         self.hanzel = Hanzel(self, 60, 100,
-                             self.breadwall,
-                             self.block_size)
- 
+                             self.breadwall)
+        self.wall = self.gen_wall()
+
+    def gen_wall(self):
+        breadwall_lst = []
+        for r in range(len(self.breadwall.map)):
+            for c in range(len(self.breadwall.map[0])):
+                if c != ' ':
+                    p = Platform(self, r, c)
+                    breadwall_lst.append(p)
+        return breadwall_lst
+
     def update(self, delta):
         self.gretel.update(delta)
         self.hanzel.update(delta)
@@ -120,8 +107,6 @@ class World:
             self.gretel.direction = DIR_LEFT
         if key == arcade.key.RIGHT:
             self.gretel.direction = DIR_RIGHT
-        if key == arcade.key.DOWN:
-            self.gretel.direction = DIR_DOWN
 
     def on_key_press_hanzel(self, key, key_modifiers):
         if key == arcade.key.W:
@@ -130,8 +115,6 @@ class World:
             self.hanzel.direction = DIR_LEFT
         if key == arcade.key.D:
             self.hanzel.direction = DIR_RIGHT
-        if key == arcade.key.S:
-            self.hanzel.direction = DIR_DOWN
 
     def on_key_release(self, key, key_modifers):
         self.gretel.direction = DIR_STILL
