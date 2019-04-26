@@ -48,32 +48,31 @@ class BreadWindow(arcade.Window):
          self.world.on_key_release(key, key_modifiers)
 
     def draw(self):
-        for p in self.world.wall:ใ
-                x = p.y + 20
-                y = p.x + 20
+        for p in self.world.wall:
+                x = (p.x-1)//40
+                y = (p.y-1)//40
 
-                # if self.world.breadwall.has_breadwall_at(p.x, p.y):
-                #     pp = ModelSprite('images/breadwall.png', model=p)
-                #     pp.draw()
-                if self.world.breadwall.has_candywall_at(p.x, p.y):
+                if self.world.breadwall.has_breadwall_at(y, x):
+                    pp = ModelSprite('images/breadwall.png', model=p)
+                    pp.draw()
+                elif self.world.breadwall.has_candywall_at(y, x):
                     pp = ModelSprite('images/candywall.png', model=p)
                     pp.draw()
-                elif self.world.breadwall.has_candywall2_at(p.x, p.y):
+                elif self.world.breadwall.has_candywall2_at(y, x):
                     pp = ModelSprite('images/candywall2.png', model=p)
                     pp.draw()
-                elif self.world.breadwall.has_candywall3_at(p.x, p.y):
+                elif self.world.breadwall.has_candywall3_at(y, x):
                     pp = ModelSprite('images/candywall3.png', model=p)
                     pp.draw()
-                elif self.world.breadwall.has_chocolava_at(p.x, p.y):
+                elif self.world.breadwall.has_chocolava_at(y, x):
                     pp = ModelSprite('images/chocolava.png', model=p)
                     pp.draw()
-                elif self.world.breadwall.has_chocolavacurve_at(p.x, p.y):
+                elif self.world.breadwall.has_chocolavacurve_at(y, x):
                     pp = ModelSprite('images/chocolavacurve.png', model=p)
                     pp.draw()
-                elif self.world.breadwall.has_chocolavacountercurve_at(p.x, p.y):
+                elif self.world.breadwall.has_chocolavacountercurve_at(y, x):
                     pp = ModelSprite('images/chocolavacountercurve.png', model=p)
                     pp.draw()
-
 def main():
     window = BreadWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
     arcade.set_window(window)
