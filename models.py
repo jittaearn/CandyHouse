@@ -1,20 +1,24 @@
 import arcade.key
 
 GRAVITY = -1
-JUMP_VY = 15
-GRETEL_RADIUS = 40
+JUMP_VY = 10
+GRETEL_RADIUS = 30
 HANZEL_RADIUS = 40
-GROUND_THICKNESS = 100
 PLATFORM_MARGIN = 5
 
 DIR_STILL = 0
+DIR_UP = 1
 DIR_RIGHT = 2
+DIR_DOWN = 3
 DIR_LEFT = 4
 MOVEMENT_SPEED = 4
  
 DIR_OFFSETS = { DIR_STILL: (0,0),
+                DIR_UP: (0,1),
                 DIR_RIGHT: (1,0),
+                DIR_DOWN: (0,-1),
                 DIR_LEFT: (-1,0) }
+
 
 class Model:
     def __init__(self, world, x, y):
@@ -41,14 +45,14 @@ class Gretel(Model):
                 self.x = 62
         if self.not_in_wall():
             self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
-            if self.y >= 800:
-                self.y = 799
-            elif self.y < 80:
+            if self.y >= 720:
+                self.y = 719
+            elif self.y <= 80:
                 self.y = 100
 
     def jump(self):
-        if not self.platform:
-            return
+        # if not self.platform:
+        #     return
         
         if not self.is_jump:
             self.is_jump = True
@@ -105,44 +109,96 @@ class Gretel(Model):
 
     def not_in_wall(self):
         x = 60 <= self.x <= 920
-        y = 80<= self.y <=700
+        y = 80 <= self.y <= 720
         print(x, y)
         return x and y
 
 class Hanzel(Model):
-    pass
-    # def __init__(self, world, x, y):
-    #     super().__init__(world, x, y)
-    #     self.vx = 0
-    #     self.vy = 0
-    #     self.is_jump = False
-    #     self.current_direction = DIR_RIGHT
-    #     self.direction = DIR_STILL
+    def __init__(self, world, x, y):
+        super().__init__(world, x, y)
+        self.vx = 0
+        self.vy = 0
+        self.is_jump = False
+        self.is_die = False
+        self.platform = None
+        self.direction = DIR_STILL
  
-    # def move(self, direction):
-    #     self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
-    #     self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
+    def move(self, direction):
+        if self.not_in_wall():
+            self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
+            if self.x >= 920:
+                self.x = 919
+            elif self.x <= 60:
+                self.x = 62
+        if self.not_in_wall():
+            self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
+            if self.y >= 720:
+                self.y = 719
+            elif self.y <= 80:
+                self.y = 100
 
-    # def jump(self):
-    #     self.is_jump = True
-    #     self.vy = JUMP_VY
+    def jump(self):
+        # if not self.platform:
+        #     return
+        
+        if not self.is_jump:
+            self.is_jump = True
+            self.vy = JUMP_VY
 
-    # # def closest_wall(self):
-    # #     dx, dy = self.world.width, self.world.height
-    # #     platform = Platform(self.world, self.world.width, self.world.height)
-    # #     for p in self.world.gen_wall:
-    # #         if self.y >= p.y and self.y - p.y <= dy:
-    # #             if min(abs(self.x - p.x)):
-    # #                 abs(self.x - p.)
+    def update(self, delta):
+        if self.is_jump:
+            self.y += self.vy
+            self.vy += GRAVITY
 
-    # def check_boarder(self, player_boarder, platforms):
-    #     if platforms.x <= player_boarder <= platforms.x + self.width
- 
-    # def update(self, delta):
-    #     self.move(self.direction)
-    #     self.y += self.vy
-    #     if self.vy >= 0:
-            # self.vy += Hanzel.GRAVITY
+            new_platform = self.find_touching_platform()
+            if new_platform:
+                self.vy = 0
+                self.set_platform(new_platform)
+        else:
+            if (self.platform) and (not self.is_on_platform(self.platform)):
+                self.platform = None
+                self.is_jump = True
+                self.vy = 0
+        self.move(self.direction)
+
+    def bottom_y(self):
+        return self.y - (GRETEL_RADIUS // 2)
+
+    def set_platform(self, platform):
+        self.is_jump = False
+        self.platform = platform
+        self.y = platform.y + (GRETEL_RADIUS // 2)
+
+    def is_on_platform(self, platform, margin=PLATFORM_MARGIN):
+        if not platform.in_top_range(self.x):
+            return False
+        
+        if abs(platform.y - self.bottom_y()) <= PLATFORM_MARGIN:
+            return True
+
+        return False
+
+    def is_falling_on_platform(self, platform):
+        if not platform.in_top_range(self.x):
+            return False
+        
+        if self.bottom_y() - self.vy > platform.y > self.bottom_y():
+            return True
+        
+        return False
+
+    def find_touching_platform(self):
+        gen_wall = self.world.wall
+        for g in gen_wall:
+            if self.is_falling_on_platform(g):
+                return g
+        return None
+
+    def not_in_wall(self):
+        x = 60 <= self.x <= 920
+        y = 80 <= self.y <= 720
+        print(x, y)
+        return x and y
 
 class Platform:
     def __init__(self, world, x, y, width, height):
@@ -181,7 +237,7 @@ class World:
 
     def update(self, delta):
         self.gretel.update(delta)
-        # self.hanzel.update(delta)
+        self.hanzel.update(delta)
 
     def on_key_press_gretel(self, key, key_modifiers):
         if key == arcade.key.UP:
@@ -210,7 +266,7 @@ class BreadWall:
                      '#llllllllllllllllllllll#',
                      '#cwcllwcwclwcwcwcllwcwc#',
                      '#                ======#',
-                     '#              ==      #',
+                     '#==== == == == ==      #',
                      '#                      #',
                      '#                      #',
                      '#__  __________________#',

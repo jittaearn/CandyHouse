@@ -35,7 +35,6 @@ class BreadWindow(arcade.Window):
     def on_draw(self):
         arcade.start_render()
         self.draw()
-
         self.gretel_sprite.draw()
         self.hanzel_sprite.draw()
         
