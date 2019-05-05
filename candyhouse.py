@@ -1,5 +1,5 @@
 import arcade
-from models import World, Gretel, Hanzel
+from models import World, Gretel, Hanzel, Witch
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
@@ -28,16 +28,25 @@ class BreadWindow(arcade.Window):
                                          model=self.world.gretel)
         self.hanzel_sprite = ModelSprite('images/hanzel.png',
                                          model=self.world.hanzel)
+        self.witch_sprite = ModelSprite('images/witch.png',
+                                         model=self.world.witch)                            
 
     def update(self, delta):
         self.world.update(delta)
  
     def on_draw(self):
         arcade.start_render()
-        self.draw()
 
+
+        arcade.draw_text(str(self.world.score),
+                         self.width - 200, self.height - 40,
+                         arcade.color.BLACK, 20)
+        
+        self.draw_donut()
+        self.draw_wall()
         self.gretel_sprite.draw()
         self.hanzel_sprite.draw()
+        self.witch_sprite.draw()
         
 
     def on_key_press(self, key, key_modifiers):
@@ -47,32 +56,45 @@ class BreadWindow(arcade.Window):
     def on_key_release(self, key, key_modifiers):
          self.world.on_key_release(key, key_modifiers)
 
-    def draw(self):
+    def draw_wall(self):
         for p in self.world.wall:
-                x = (p.x-1)//40
-                y = (p.y-1)//40
+            x = (p.x-1)//40
+            y = (p.y)//40
 
-                if self.world.breadwall.has_breadwall_at(y, x):
-                    pp = ModelSprite('images/breadwall.png', model=p)
-                    pp.draw()
-                elif self.world.breadwall.has_candywall_at(y, x):
-                    pp = ModelSprite('images/candywall.png', model=p)
-                    pp.draw()
-                elif self.world.breadwall.has_candywall2_at(y, x):
-                    pp = ModelSprite('images/candywall2.png', model=p)
-                    pp.draw()
-                elif self.world.breadwall.has_candywall3_at(y, x):
-                    pp = ModelSprite('images/candywall3.png', model=p)
-                    pp.draw()
-                elif self.world.breadwall.has_chocolava_at(y, x):
-                    pp = ModelSprite('images/chocolava.png', model=p)
-                    pp.draw()
-                elif self.world.breadwall.has_chocolavacurve_at(y, x):
-                    pp = ModelSprite('images/chocolavacurve.png', model=p)
-                    pp.draw()
-                elif self.world.breadwall.has_chocolavacountercurve_at(y, x):
-                    pp = ModelSprite('images/chocolavacountercurve.png', model=p)
-                    pp.draw()
+            if self.world.breadwall.has_breadwall_at(y, x):
+                pp = ModelSprite('images/breadwall.png', model=p)
+                pp.draw()
+            elif self.world.breadwall.has_candywall_at(y, x):
+                pp = ModelSprite('images/candywall.png', model=p)
+                pp.draw()
+            elif self.world.breadwall.has_candywall2_at(y, x):
+                pp = ModelSprite('images/candywall2.png', model=p)
+                pp.draw()
+            elif self.world.breadwall.has_candywall3_at(y, x):
+                pp = ModelSprite('images/candywall3.png', model=p)
+                pp.draw()
+            elif self.world.breadwall.has_chocolava_at(y, x):
+                pp = ModelSprite('images/chocolava.png', model=p)
+                pp.draw()
+            elif self.world.breadwall.has_chocolavacurve_at(y, x):
+                pp = ModelSprite('images/chocolavacurve.png', model=p)
+                pp.draw()
+            elif self.world.breadwall.has_chocolavacountercurve_at(y, x):
+                pp = ModelSprite('images/chocolavacountercurve.png', model=p)
+                pp.draw()
+
+    def draw_donut(self):
+            for d in self.world.donut_list:
+                x = (d.x-1)//40
+                y = (d.y-1)//40
+                if not d.is_pick:
+                    if not d.is_blue:
+                        pp = ModelSprite('images/pinkdonut.png', model=d)
+                        pp.draw()
+                    else:
+                        pp = ModelSprite('images/bluedonut.png', model=d)
+                        pp.draw()
+
 def main():
     window = BreadWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
     arcade.set_window(window)
