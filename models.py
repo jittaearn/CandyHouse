@@ -5,7 +5,7 @@ GRAVITY = -1
 JUMP_VY = 10
 MAX_VX = 6
 ACCX = 2
-PLAYER_RADIUS = 60
+PLAYER_RADIUS = 50
 WITCH_RADIUS = 60
 PLATFORM_MARGIN = 5
 
@@ -14,7 +14,7 @@ DIR_UP = 1
 DIR_RIGHT = 2
 DIR_DOWN = 3
 DIR_LEFT = 6
-MOVEMENT_SPEED = 4
+MOVEMENT_SPEED = 6
  
 DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_UP: (0,1),
@@ -28,7 +28,7 @@ class Model:
         self.x = x
         self.y = y
 
-class Gretel(Model):
+class Player(Model):
     def __init__(self, world, x, y):
         super().__init__(world, x, y)
         self.vx = 0
@@ -111,91 +111,6 @@ class Gretel(Model):
         y = self.y <= 718 
         return x and y
 
-class Hanzel(Model):
-    def __init__(self, world, x, y):
-        super().__init__(world, x, y)
-        self.vx = 0
-        self.vy = 0
-        self.is_jump = False
-        self.is_die = False
-        self.platform = None
-        self.direction = DIR_STILL
-        self.breadwall = BreadWall(world)
- 
-    def move(self, direction):
-        if self.not_in_wall():
-            self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
-            if self.x >= 920:
-                self.x = 919
-            elif self.x <= 60:
-                self.x = 62
-        if self.not_in_wall():
-            self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
-            if self.y >= 718:
-                self.y = 717
-            elif self.y <= 201:
-                self.y = 202
-
-    def jump(self):
-        if not self.is_jump:
-            self.is_jump = True
-            self.vy = JUMP_VY
-
-    def set_platform(self, platform):
-        self.is_jump = False
-        self.platform = platform
-        self.y = platform.y + 60
-
-    def is_on_platform(self, platform, margin=PLATFORM_MARGIN):
-        if not platform.in_top_range(self.x):
-            return False
-        
-        if abs(platform.y - self.bottom_y()) <= PLATFORM_MARGIN:
-            return True
-
-        return False
-
-    def is_falling_on_platform(self, platform):
-        if not platform.in_top_range(self.x):
-            return False
-        
-        if self.bottom_y() - self.vy > platform.y > self.bottom_y():
-            return True
-        
-        return False
-
-    def find_touching_platform(self):
-        gen_wall = self.world.wall
-        for g in gen_wall:
-            if self.is_falling_on_platform(g):
-                return g
-        return None    
-    
-    def update(self, delta):
-        self.move(self.direction)
-        if self.is_jump:
-            self.y += self.vy
-            self.vy += GRAVITY
-        
-            new_p = self.find_touching_platform()
-            if new_p:
-                self.vy = 0
-                self.set_platform(new_p)
-        else:
-            if (self.platform) and not self.is_on_platform(self.platform):
-                self.platform = None
-                self.is_jump = True
-                self.vy = 0
-
-    def bottom_y(self):
-        return self.y - (PLAYER_RADIUS // 2)
-
-
-    def not_in_wall(self):
-        x = 60 <= self.x <= 920
-        y = 202 <= self.y <= 718 
-        return x and y
-
 class Witch(Model):
     def __init__(self, world, x, y):
         super().__init__(world, x, y)
@@ -255,8 +170,8 @@ class World:
         self.width = width
         self.height = height
         self.breadwall = BreadWall(self)
-        self.gretel = Gretel(self, self.width - 150, 210)
-        self.hanzel = Hanzel(self, 150, self.height-195)
+        self.gretel = Player(self, self.width - 150, 210)
+        self.hanzel = Player(self, 150, self.height-195)
         self.witch = Witch(self, 500, 380)
         self.wall, self.donut_list = self.gen_wall()
         self.state = World.START
@@ -364,5 +279,3 @@ class BreadWall:
 
     def has_bluedonut_at(self, r, c):
         return self.map[r][c] == 'o'
-
-
