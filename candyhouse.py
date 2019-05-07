@@ -22,7 +22,6 @@ class ModelSprite(arcade.Sprite):
 class BreadWindow(arcade.Window):
     def __init__(self, width, height):
         super().__init__(width, height)
-        arcade.set_background_color(arcade.color.CREAM)
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.gretel_sprite = ModelSprite('images/gretel.png',
                                          model=self.world.gretel)
@@ -33,10 +32,25 @@ class BreadWindow(arcade.Window):
 
     def update(self, delta):
         self.world.update(delta)
+
+    def draw_menu_screen(self):
+        if self.world.state == World.FROZEN:
+            arcade.set_background_color(arcade.color.WHITE)
+            arcade.draw_text("Press any Key to Start", 250, 500,
+                         arcade.color.BLACK, 35)
+        elif self.world.state == World.DEAD:
+            arcade.set_background_color(arcade.color.WHITE)
+            arcade.draw_text("GAME OVER", 300, 500,
+                         arcade.color.BLACK, 40)
  
     def on_draw(self):
         arcade.start_render()
+        self.draw_menu_screen()
+        if self.world.state == World.START:
+            self.state_start()
 
+    def state_start(self):
+        arcade.set_background_color(arcade.color.CREAM)
         gretel_score = f"Gretel's Donut: {self.world.gretel_score}"
         arcade.draw_text(gretel_score, self.width - 200, self.height - 48,
                          arcade.color.BROWN, 14)
@@ -61,10 +75,12 @@ class BreadWindow(arcade.Window):
         self.hanzel_sprite.draw()
         self.witch_sprite.draw()
         
-
     def on_key_press(self, key, key_modifiers):
          self.world.on_key_press_gretel(key, key_modifiers)
          self.world.on_key_press_hanzel(key, key_modifiers)
+         self.world.on_key_press(key, key_modifiers)
+         if not self.world.state == World.DEAD:
+            self.world.state = World.START
 
     def on_key_release(self, key, key_modifiers):
          self.world.on_key_release(key, key_modifiers)
@@ -127,17 +143,7 @@ class BreadWindow(arcade.Window):
                 if not d.is_pink:
                     pp = ModelSprite('images/bluedonut.png', model=d)
                     pp.draw()
-
-
-    def draw_menu_screen(self):
-        if self.world.state == World.FROZEN:
-            arcade.draw_text("Press space to enter", 400, 500,
-                         arcade.color.BLACK, 30)
-        if self.world.state == World.DEAD:
-            arcade.draw_text("GAME OVER", 400, 500,
-                         arcade.color.BLACK, 30)
                 
-
 def main():
     window = BreadWindow(SCREEN_WIDTH, SCREEN_HEIGHT)
     arcade.set_window(window)

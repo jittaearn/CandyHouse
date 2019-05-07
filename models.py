@@ -1,6 +1,5 @@
 import arcade.key
 
-
 GRAVITY = -1
 JUMP_VY = 10
 MAX_VX = 2
@@ -29,7 +28,7 @@ class Player(Model):
         super().__init__(world, x, y)
         self.vx = 0
         self.vy = 0
-        self.is_jump = False
+        self.is_jump = True
         self.platform = None
         self.direction = DIR_STILL
         self.breadwall = BreadWall(world)
@@ -188,7 +187,7 @@ class World:
         self.hanzel = Player(self, 150, self.height-195)
         self.witch = Witch(self, 500, 380)
         self.wall, self.pink_donut_list , self.blue_donut_list, self.chocolava_list, self.door_list = self.gen_wall()
-        self.state = World.START
+        self.state = World.FROZEN
         self.gretel_score = 0 
         self.hanzel_score = 0 
         self.gretel_lives = 3 
@@ -246,8 +245,6 @@ class World:
     def is_dead(self):
         if self.gretel_lives == 0 or self.hanzel_lives == 0:
                 self.state = World.DEAD
-        else:
-            self.state = World.START
 
     def check_lives(self):
         if self.gretel_lives >= 1 and self.hanzel_lives >= 1:
@@ -305,6 +302,10 @@ class World:
         if key == arcade.key.D:
             self.hanzel.direction = DIR_RIGHT
 
+    def on_key_press(self, key, key_modifiers):
+        if key == arcade.key.SPACE:
+            self.gretel.direction = DIR_STILL
+
     def on_key_release(self, key, key_modifers):
         self.gretel.direction = DIR_STILL
         self.hanzel.direction = DIR_STILL
@@ -355,14 +356,14 @@ class BreadWall:
     def has_chocolavacountercurve_at(self, r, c):
         return self.map[r][c] == 'w'
 
-    def has_greteldoor_at(self, r, c):
-        return self.map[r][c] == 'g'
-
-    def has_hanzeldoor_at(self, r, c):
-        return self.map[r][c] == 'h'
-
     def has_pinkdonut_at(self, r, c):
         return self.map[r][c] == '.'
 
     def has_bluedonut_at(self, r, c):
         return self.map[r][c] == 'o'
+    
+    def has_greteldoor_at(self, r, c):
+        return self.map[r][c] == 'g'
+
+    def has_hanzeldoor_at(self, r, c):
+        return self.map[r][c] == 'h'
