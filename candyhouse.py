@@ -35,13 +35,20 @@ class BreadWindow(arcade.Window):
 
     def draw_menu_screen(self):
         if self.world.state == World.FROZEN:
-            arcade.set_background_color(arcade.color.WHITE)
-            arcade.draw_text("Press any Key to Start", 250, 500,
-                         arcade.color.BLACK, 35)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                        SCREEN_WIDTH, SCREEN_HEIGHT,
+                                        texture=arcade.load_texture('images/back.jpeg'))
+            # arcade.draw_text("Press any Key to Start", 250, 500,
+            #              arcade.color.BLACK, 35)
         elif self.world.state == World.DEAD:
-            arcade.set_background_color(arcade.color.WHITE)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                        SCREEN_WIDTH, SCREEN_HEIGHT,
+                                        texture=arcade.load_texture('images/gameoverbackground.png'))
             arcade.draw_text("GAME OVER", 300, 500,
                          arcade.color.BLACK, 40)
+            arcade.draw_text("RESTART", 300, 300,
+                         arcade.color.BLACK, 40)
+            
  
     def on_draw(self):
         arcade.start_render()
@@ -49,7 +56,13 @@ class BreadWindow(arcade.Window):
         if self.world.state == World.START:
             self.state_start()
 
+    # def background(self):
+    #     arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+    #                                     SCREEN_WIDTH, SCREEN_HEIGHT,
+    #                                     texture=arcade.load_texture('images/background.png'))
+
     def state_start(self):
+        # self.background()
         arcade.set_background_color(arcade.color.CREAM)
         gretel_score = f"Gretel's Donut: {self.world.gretel_score}"
         arcade.draw_text(gretel_score, self.width - 200, self.height - 48,
@@ -102,16 +115,17 @@ class BreadWindow(arcade.Window):
             elif self.world.breadwall.has_candywall3_at(y, x):
                 pp = ModelSprite('images/candywall3.png', model=p)
                 pp.draw()
+            elif self.world.breadwall.has_enterdoor_at(y, x):
+                pp = ModelSprite('images/enterdoor.png', model=p)
+                pp.draw()
+
 
     def draw_door(self):
         for d in self.world.door_list:
             x = (d.x-1)//40
             y = (d.y)//40
-            if self.world.breadwall.has_greteldoor_at(y, x):
-                pp = ModelSprite('images/greteldoor.png', model=d)
-                pp.draw()
-            elif self.world.breadwall.has_hanzeldoor_at(y, x):
-                pp = ModelSprite('images/hanzeldoor.png', model=d)
+            if self.world.breadwall.has_exitdoor_at(y, x):
+                pp = ModelSprite('images/exitdoor.png', model=d)
                 pp.draw()
 
     def draw_lava(self):
@@ -120,12 +134,6 @@ class BreadWindow(arcade.Window):
             y = (l.y)//40
             if self.world.breadwall.has_chocolava_at(y, x):
                 pp = ModelSprite('images/chocolava.png', model=l)
-                pp.draw()
-            elif self.world.breadwall.has_chocolavacurve_at(y, x):
-                pp = ModelSprite('images/chocolavacurve.png', model=l)
-                pp.draw() 
-            elif self.world.breadwall.has_chocolavacountercurve_at(y, x):
-                pp = ModelSprite('images/chocolavacountercurve.png', model=l)
                 pp.draw()
 
     def draw_donut(self):

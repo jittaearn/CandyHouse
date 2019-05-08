@@ -2,7 +2,7 @@ import arcade.key
 
 GRAVITY = -1
 JUMP_VY = 10
-MAX_VX = 2
+MAX_VX = 4
 ACCX = 2
 PLAYER_RADIUS = 50
 WITCH_RADIUS = 60
@@ -28,7 +28,9 @@ class Player(Model):
         super().__init__(world, x, y)
         self.vx = 0
         self.vy = 0
-        self.is_jump = True
+        self.is_jump = False
+        self.jump_count = 0
+        self.jump_charge = 2
         self.platform = None
         self.direction = DIR_STILL
         self.breadwall = BreadWall(world)
@@ -46,9 +48,12 @@ class Player(Model):
                 self.y = 717
 
     def jump(self):
-        if not self.is_jump:
+        if self.jump_count <= 2:
             self.is_jump = True
             self.vy = JUMP_VY
+            self.jump_count += 1
+
+        arcade.sound.play_sound()
 
     def set_platform(self, platform):
         self.is_jump = False
@@ -81,10 +86,14 @@ class Player(Model):
                 return g
         return None    
 
+    def top_y(self):
+        return self.y - (PLAYER_RADIUS // 2)
+
     def bottom_y(self):
         return self.y - (PLAYER_RADIUS // 2)
     
     def update(self, delta):
+        print(self.jump_charge)
         self.move(self.direction)
         if self.is_jump:
             self.y += self.vy
@@ -93,11 +102,13 @@ class Player(Model):
             new_p = self.find_touching_platform()
             if new_p:
                 self.vy = 0
+                self.jump_count = 0
                 self.set_platform(new_p)
         else:
             if (self.platform) and not self.is_on_platform(self.platform):
                 self.platform = None
                 self.is_jump = True
+                self.jump_count = 0
                 self.vy = 0
 
     def not_in_wall(self):
@@ -116,14 +127,14 @@ class Witch(Model):
             self.vx += ACCX
         if self.not_in_wall():
             self.x += self.vx
-            if self.x >= 520:
+            if self.x >= 920:
                 self.x = 62
 
     def update(self, delta):
         self.move(self.direction)
 
     def not_in_wall(self):
-        x = 60 <= self.x <= 520
+        x = 60 <= self.x <= 920
         return x
 
     def incontact_witch(self, player):
@@ -183,10 +194,11 @@ class World:
         self.width = width
         self.height = height
         self.breadwall = BreadWall(self)
-        self.gretel = Player(self, self.width - 150, 210)
-        self.hanzel = Player(self, 150, self.height-195)
-        self.witch = Witch(self, 500, 380)
-        self.wall, self.pink_donut_list , self.blue_donut_list, self.chocolava_list, self.door_list = self.gen_wall()
+        self.gretel = Player(self, 210, self.height - 190)
+        self.hanzel = Player(self, 240, self.height - 190)
+        self.witch = Witch(self, 500, 500)
+        self.wall, self.pink_donut_list , self.blue_donut_list, \
+            self.chocolava_list, self.door_list = self.gen_wall()
         self.state = World.FROZEN
         self.gretel_score = 0 
         self.hanzel_score = 0 
@@ -203,8 +215,8 @@ class World:
             for c in range(len(self.breadwall.map[0])):
                 if self.breadwall.map[r][c] != ' ' and self.breadwall.map[r][c] != 'o' and \
                     self.breadwall.map[r][c] != '.' and self.breadwall.map[r][c] != 'c' and \
-                        self.breadwall.map[r][c] != 'w' and self.breadwall.map[r][c] != 'l' and \
-                            self.breadwall.map[r][c] != 'g' and self.breadwall.map[r][c] != 'h':
+                    self.breadwall.map[r][c] != 'w' and self.breadwall.map[r][c] != 'l' and \
+                    self.breadwall.map[r][c] != 'g':
                     p = Platform(self, (c+1) * 40, r * 40, 40, 60)
                     breadwall_lst.append(p)
                 elif self.breadwall.map[r][c] == 'o':
@@ -222,9 +234,6 @@ class World:
                 elif self.breadwall.map[r][c] == 'w':
                     l = Chocolatelava(self, (c+1) * 40, r * 40, 40, 40)
                     chocolava_list.append(l)
-                elif self.breadwall.map[r][c] == 'h':
-                    h = Door(self, (c+1) * 40, r * 40, 40, 40)
-                    door_list.append(h)
                 elif self.breadwall.map[r][c] == 'g':
                     g = Door(self, (c+1) * 40, r * 40, 40, 40)
                     door_list.append(g)
@@ -250,12 +259,12 @@ class World:
         if self.gretel_lives >= 1 and self.hanzel_lives >= 1:
             if self.witch.incontact_witch(self.gretel):
                 self.gretel_lives -= 1
-                self.gretel.x = self.width - 150
-                self.gretel.y = 210
+                self.gretel.x = 210
+                self.gretel.y = self.height - 190
             if self.witch.incontact_witch(self.hanzel):
                 self.hanzel_lives -= 1
-                self.hanzel.x = 150 
-                self.hanzel.y = self.height - 195
+                self.hanzel.x = 240
+                self.hanzel.y = self.height - 190
 
     def check_donut_collection(self):
         for d in self.pink_donut_list:
@@ -273,17 +282,16 @@ class World:
         for l in self.chocolava_list:
             if l.incontact_lava(self.gretel):
                 self.gretel_lives -= 1
-                self.gretel.x = self.width - 150
-                self.gretel.y = 210
+                self.gretel.x = 170
+                self.gretel.y = self.height - 195
             if l.incontact_lava(self.hanzel):
                 self.hanzel_lives -= 1
                 self.hanzel.x = 150
                 self.hanzel.y = self.height - 195
 
     def check_door(self):
-        if self.door_list[0].incontact_door(self.gretel) and self.gretel_score == 4:
-            self.state = World.DEAD
-        if self.door_list[1].incontact_door(self.hanzel) and self.hanzel_score == 4:
+        if (self.door_list[0].incontact_door(self.gretel) and self.gretel_score == 4)\
+             or (self.door_list[0].incontact_door(self.hanzel) and self.hanzel_score == 4):
             self.state = World.DEAD
         
     def on_key_press_gretel(self, key, key_modifiers):
@@ -313,22 +321,22 @@ class World:
 class BreadWall:
     def __init__(self, world):
         self.map = [ '                        ',
+                     '                        ',
                      '########################',
                      '#llllllllllllllllllllll#',
-                     '#cwcllwcwclwcwcwcllwcwc#',
-                     '#==== == == == ========#',
-                     '#        o  .          #',
-                     '#                    h #',
+                     '#---   ---- -- --------#',
+                     '# o --- .              #',
+                     '#                   h  #',
                      '#                      #',
                      '#____  ________________#',
                      '# o                  . #',
                      '#                      #',
-                     '#--------------  ------#',
+                     '#===============  =====#',
                      '# .                  o #',
                      '#                      #',
-                     '#_____  _______________#',
+                     '#_______  _____________#',
                      '#                 o .  #',
-                     '# g                    #',
+                     '#  g                   #',
                      '#                      #',
                      '########################',
                      '                        ',]
@@ -350,20 +358,14 @@ class BreadWall:
     def has_chocolava_at(self, r, c):
         return self.map[r][c] == 'l'
 
-    def has_chocolavacurve_at(self, r, c):
-        return self.map[r][c] == 'c'
-
-    def has_chocolavacountercurve_at(self, r, c):
-        return self.map[r][c] == 'w'
-
     def has_pinkdonut_at(self, r, c):
         return self.map[r][c] == '.'
 
     def has_bluedonut_at(self, r, c):
         return self.map[r][c] == 'o'
     
-    def has_greteldoor_at(self, r, c):
+    def has_exitdoor_at(self, r, c):
         return self.map[r][c] == 'g'
 
-    def has_hanzeldoor_at(self, r, c):
+    def has_enterdoor_at(self, r, c):
         return self.map[r][c] == 'h'
