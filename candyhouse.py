@@ -45,8 +45,6 @@ class BreadWindow(arcade.Window):
                                         texture=arcade.load_texture('images/frozenbackground.jpg'))
             arcade.draw_texture_rectangle(500, 712, 300, 60,
                                         texture=arcade.load_texture('images/screen.png'))
-            # arcade.draw_texture_rectangle(500, 710, 300, 60,
-            #                             texture=arcade.load_texture('images/screennew.png'))
             arcade.draw_texture_rectangle(500, 80, 300, 60,
                                         texture=arcade.load_texture('images/space.png'))
             arcade.draw_text("Press (esc) to EXIT", 790, 765,
@@ -70,8 +68,6 @@ class BreadWindow(arcade.Window):
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                         SCREEN_WIDTH, SCREEN_HEIGHT,
                                         texture=arcade.load_texture('images/gameoverbackground.png'))
-            arcade.draw_text("Press SPACE to Restart", 250, 300,
-                         arcade.color.VIOLET_RED, 35)
             arcade.draw_text("Press (esc) to EXIT", 790, 765,
                          arcade.color.VIOLET_BLUE, 15)
 

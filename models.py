@@ -257,23 +257,28 @@ class World:
     def is_dead(self):
         if self.gretel_lives == 0 or self.hanzel_lives == 0:
             self.state = World.DEAD
-            # arcade.sound.play_sound(self.dead_state)
         elif (self.gretel_score == 5 and self.exitdoor.incontact_door(self.gretel)) and\
             (self.hanzel_score == 5 and self.exitdoor.incontact_door(self.hanzel)):
             self.state = World.WINNER
-            # arcade.sound.play_sound(self.win_state)
+
+    # def play_sound(self):
+    #     if self.gretel_lives == 0 or self.hanzel_lives == 0:
+    #         arcade.sound.play_sound(self.dead_state)
+    #     elif (self.gretel_score == 5 and self.exitdoor.incontact_door(self.gretel)) and\
+    #         (self.hanzel_score == 5 and self.exitdoor.incontact_door(self.hanzel)):
+    #         arcade.sound.play_sound(self.win_state)
 
     def check_lives(self):
         if self.gretel_lives >= 1 and self.hanzel_lives >= 1:
             if self.witch.incontact_witch(self.gretel):
                 arcade.sound.play_sound(self.death_sound)
                 self.gretel_lives -= 1
-                self.gretel.x = 210
+                self.gretel.x = 250
                 self.gretel.y = self.height - 190
             if self.witch.incontact_witch(self.hanzel):
                 arcade.sound.play_sound(self.death_sound)
                 self.hanzel_lives -= 1
-                self.hanzel.x = 240
+                self.hanzel.x = 290
                 self.hanzel.y = self.height - 190
 
     def check_donut_collection(self):
