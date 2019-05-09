@@ -54,7 +54,7 @@ class Player(Model):
                 self.vy = JUMP_VY
                 self.jump_count += 1
 
-        # arcade.sound.play_sound()
+        # arcade.sound.play_sound(self.world.jump_sound)
 
     def set_platform(self, platform):
         self.is_jump = False
@@ -209,6 +209,9 @@ class World:
         self.hanzel_score = 0 
         self.gretel_lives = 3 
         self.hanzel_lives = 3 
+        self.jump_sound = arcade.sound.load_sound('sound/jump.wav')
+        self.pick_sound = arcade.sound.load_sound('sound/pick.wav')
+        self.death_sound = arcade.sound.load_sound('sound/death.wav')
 
     def gen_wall(self):
         breadwall_lst = []
@@ -274,11 +277,14 @@ class World:
                 d.is_pink_pick = True
                 self.gretel_score += 1
                 self.pink_donut_list.remove(d)
+                arcade.sound.play_sound(self.pick_sound)
         for d in self.blue_donut_list:
             if d.pick(self.hanzel):
                 d.is_blue_pick = True
                 self.hanzel_score += 1
                 self.blue_donut_list.remove(d)
+                arcade.sound.play_sound(self.pick_sound)
+        
 
     def check_chocolava(self):
         for l in self.chocolava_list:
@@ -321,13 +327,13 @@ class BreadWall:
                      '#   o ---- .           #',
                      '#                      #',
                      '#                      #',
-                     '#______  ______________#',
+                     '#======  ==============#',
                      '# .           o      . #',
                      '#                      #',
-                     '#===============  =====#',
+                     '#---------------  -----#',
                      '#  o               . o #',
                      '#                      #',
-                     '#_______  _____________#',
+                     '#=======  =============#',
                      '#                 o .  #',
                      '#  e                   #',
                      '#                      #',
@@ -339,13 +345,13 @@ class BreadWall:
     def has_breadwall_at(self, r, c):
         return self.map[r][c] == '#'
 
-    def has_candywall_at(self, r, c):
+    def has_whitecandy_at(self, r, c):
         return self.map[r][c] == '-'
     
-    def has_candywall2_at(self, r, c):
+    def has_pinkcandy_at(self, r, c):
         return self.map[r][c] == '='
 
-    def has_candywall3_at(self, r, c):
+    def has_bluecandy_at(self, r, c):
         return self.map[r][c] == '_'
 
     def has_chocolava_at(self, r, c):

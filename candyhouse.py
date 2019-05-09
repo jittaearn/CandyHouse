@@ -1,8 +1,8 @@
 import arcade
 from models import World, Player, Witch, Door
 
-# music = arcade.sound.load_sound('sound/backgroundmusic.wav')
-# arcade.sound.play_sound(music)
+music = arcade.sound.load_sound('sound/backgroundmusic.wav')
+arcade.sound.play_sound(music)
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
@@ -66,7 +66,7 @@ class BreadWindow(arcade.Window):
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                         SCREEN_WIDTH, SCREEN_HEIGHT,
                                         texture=arcade.load_texture('images/gameoverbackground.png'))
-            arcade.draw_text("Press SPACE to Restart", 200, 200,
+            arcade.draw_text("Press SPACE to Restart", 250, 300,
                          arcade.color.VIOLET_RED, 35)
             arcade.draw_text("Press (esc) to EXIT", 790, 765,
                          arcade.color.VIOLET_BLUE, 15)
@@ -86,14 +86,16 @@ class BreadWindow(arcade.Window):
         if self.world.state == World.START:
             self.state_start()
 
-    # def background(self):
-    #     arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
-    #                                     SCREEN_WIDTH, SCREEN_HEIGHT,
-    #                                     texture=arcade.load_texture('images/instructionbackground.png'))
+    def background(self):
+        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                        SCREEN_WIDTH, SCREEN_HEIGHT,
+                                        texture=arcade.load_texture('images/background.png'))
+        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                        SCREEN_WIDTH - 50, SCREEN_HEIGHT-125,
+                                        texture=arcade.load_texture('images/creambackground.jpg'))
 
     def state_start(self):
-        # self.background()
-        arcade.set_background_color(arcade.color.CREAM)
+        self.background()
         gretel_score = f"Gretel's Donut: {self.world.gretel_score}"
         arcade.draw_text(gretel_score, self.width - 200, self.height - 48,
                          arcade.color.BROWN, 14)
@@ -125,7 +127,7 @@ class BreadWindow(arcade.Window):
         if self.world.state < 3:
             if key == arcade.key.SPACE:
                 self.world.state += 1   
-        elif self.world.state == 4 or self.world.state == 5:
+        if self.world.state == 4 or self.world.state == 5:
             if key == arcade.key.SPACE:
                 self.world.state = 1
         if key == arcade.key.ESCAPE:
@@ -145,14 +147,14 @@ class BreadWindow(arcade.Window):
             if self.world.breadwall.has_breadwall_at(y, x):
                 pp = ModelSprite('images/breadwall.png', model=p)
                 pp.draw()
-            elif self.world.breadwall.has_candywall_at(y, x):
-                pp = ModelSprite('images/candywall.png', model=p)
+            elif self.world.breadwall.has_whitecandy_at(y, x):
+                pp = ModelSprite('images/whitecandy.png', model=p)
                 pp.draw()
-            elif self.world.breadwall.has_candywall2_at(y, x):
-                pp = ModelSprite('images/candywall2.png', model=p)
+            elif self.world.breadwall.has_pinkcandy_at(y, x):
+                pp = ModelSprite('images/pinkcandy.png', model=p)
                 pp.draw()
-            elif self.world.breadwall.has_candywall3_at(y, x):
-                pp = ModelSprite('images/candywall3.png', model=p)
+            elif self.world.breadwall.has_bluecandy_at(y, x):
+                pp = ModelSprite('images/bluecandy.png', model=p)
                 pp.draw()
             elif self.world.breadwall.has_enterdoor_at(y, x):
                 pp = ModelSprite('images/enterdoor.png', model=p)
