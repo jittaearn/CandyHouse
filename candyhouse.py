@@ -42,9 +42,13 @@ class BreadWindow(arcade.Window):
         if self.world.state == World.FROZEN:
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                         SCREEN_WIDTH, SCREEN_HEIGHT,
-                                        texture=arcade.load_texture('images/back.jpeg'))
-            # arcade.draw_text("Press SPACE to Enter", 250, 500,
-            #              arcade.color.BLACK, 35)
+                                        texture=arcade.load_texture('images/frozenbackground.jpg'))
+            arcade.draw_texture_rectangle(500, 712, 300, 60,
+                                        texture=arcade.load_texture('images/screen.png'))
+            # arcade.draw_texture_rectangle(500, 710, 300, 60,
+            #                             texture=arcade.load_texture('images/screennew.png'))
+            arcade.draw_texture_rectangle(500, 80, 300, 60,
+                                        texture=arcade.load_texture('images/space.png'))
             arcade.draw_text("Press (esc) to EXIT", 790, 765,
                          arcade.color.VIOLET_BLUE, 15)
 
@@ -76,9 +80,7 @@ class BreadWindow(arcade.Window):
                                         SCREEN_WIDTH, SCREEN_HEIGHT,
                                         texture=arcade.load_texture('images/winnerbackground.png'))
             arcade.draw_text("Press (esc) to EXIT", 790, 765,
-                         arcade.color.VIOLET_BLUE, 15)
-    
-            
+                         arcade.color.VIOLET_BLUE, 15)    
  
     def on_draw(self):
         arcade.start_render()
@@ -118,18 +120,18 @@ class BreadWindow(arcade.Window):
         self.draw_donut()
         self.draw_lava()
         self.draw_wall()
+        self.exitdoor_sprite.draw()
         self.gretel_sprite.draw()
         self.hanzel_sprite.draw()
         self.witch_sprite.draw()
-        self.exitdoor_sprite.draw()
         
     def on_key_press(self, key, key_modifiers):
         if self.world.state < 3:
             if key == arcade.key.SPACE:
                 self.world.state += 1   
         if self.world.state == 4 or self.world.state == 5:
-            if key == arcade.key.SPACE:
-                self.world.state = 1
+            if key == arcade.key.ENTER:
+                self.world.state = World.START
         if key == arcade.key.ESCAPE:
             exit()
 
@@ -153,12 +155,8 @@ class BreadWindow(arcade.Window):
             elif self.world.breadwall.has_pinkcandy_at(y, x):
                 pp = ModelSprite('images/pinkcandy.png', model=p)
                 pp.draw()
-            elif self.world.breadwall.has_bluecandy_at(y, x):
-                pp = ModelSprite('images/bluecandy.png', model=p)
-                pp.draw()
-            elif self.world.breadwall.has_enterdoor_at(y, x):
-                pp = ModelSprite('images/enterdoor.png', model=p)
-                pp.draw()
+        arcade.draw_texture_rectangle(150, 627, 170, 128,
+                                texture=arcade.load_texture('images/enterdoor.png'))
 
     def draw_lava(self):
         for l in self.world.chocolava_list:

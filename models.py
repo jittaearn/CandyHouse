@@ -48,13 +48,12 @@ class Player(Model):
                 self.y = 717
 
     def jump(self):
-        # if self.is_hitting_platform(self.platform):
-            if self.jump_count <= 2:
-                self.is_jump = True
-                self.vy = JUMP_VY
-                self.jump_count += 1
+        if self.jump_count <= 2:
+            self.is_jump = True
+            self.vy = JUMP_VY
+            self.jump_count += 1
 
-        # arcade.sound.play_sound(self.world.jump_sound)
+        arcade.sound.play_sound(self.world.jump_sound)
 
     def set_platform(self, platform):
         self.is_jump = False
@@ -71,9 +70,9 @@ class Player(Model):
 
         return False
 
-    def is_hitting_platform(self, platform):
-        if self.top_y() > platform.y:
-            return True
+    # def is_hitting_platform(self, platform):
+    #     if self.top_y() > platform.y:
+    #         return True
 
     def is_falling_on_platform(self, platform):
         if not platform.in_block_range(self.x):
@@ -199,8 +198,8 @@ class World:
         self.width = width
         self.height = height
         self.breadwall = BreadWall(self)
-        self.gretel = Player(self, 210, self.height - 198)
-        self.hanzel = Player(self, 240, self.height - 198)
+        self.gretel = Player(self, 250, self.height - 198)
+        self.hanzel = Player(self, 290, self.height - 198)
         self.witch = Witch(self, 500, 500)
         self.exitdoor = Door(self, self.width - 150 ,230)
         self.wall, self.pink_donut_list , self.blue_donut_list, self.chocolava_list = self.gen_wall()
@@ -212,6 +211,8 @@ class World:
         self.jump_sound = arcade.sound.load_sound('sound/jump.wav')
         self.pick_sound = arcade.sound.load_sound('sound/pick.wav')
         self.death_sound = arcade.sound.load_sound('sound/death.wav')
+        self.dead_state = arcade.sound.load_sound('sound/dead_state.wav')
+        self.win_state = arcade.sound.load_sound('sound/win_state.wav')
 
     def gen_wall(self):
         breadwall_lst = []
@@ -256,17 +257,21 @@ class World:
     def is_dead(self):
         if self.gretel_lives == 0 or self.hanzel_lives == 0:
             self.state = World.DEAD
+            # arcade.sound.play_sound(self.dead_state)
         elif (self.gretel_score == 5 and self.exitdoor.incontact_door(self.gretel)) and\
             (self.hanzel_score == 5 and self.exitdoor.incontact_door(self.hanzel)):
             self.state = World.WINNER
+            # arcade.sound.play_sound(self.win_state)
 
     def check_lives(self):
         if self.gretel_lives >= 1 and self.hanzel_lives >= 1:
             if self.witch.incontact_witch(self.gretel):
+                arcade.sound.play_sound(self.death_sound)
                 self.gretel_lives -= 1
                 self.gretel.x = 210
                 self.gretel.y = self.height - 190
             if self.witch.incontact_witch(self.hanzel):
+                arcade.sound.play_sound(self.death_sound)
                 self.hanzel_lives -= 1
                 self.hanzel.x = 240
                 self.hanzel.y = self.height - 190
@@ -289,10 +294,12 @@ class World:
     def check_chocolava(self):
         for l in self.chocolava_list:
             if l.incontact_lava(self.gretel):
+                arcade.sound.play_sound(self.death_sound)
                 self.gretel_lives -= 1
                 self.gretel.x = 170
                 self.gretel.y = self.height - 195
             if l.incontact_lava(self.hanzel):
+                arcade.sound.play_sound(self.death_sound)
                 self.hanzel_lives -= 1
                 self.hanzel.x = 150
                 self.hanzel.y = self.height - 195
@@ -350,9 +357,6 @@ class BreadWall:
     
     def has_pinkcandy_at(self, r, c):
         return self.map[r][c] == '='
-
-    def has_bluecandy_at(self, r, c):
-        return self.map[r][c] == '_'
 
     def has_chocolava_at(self, r, c):
         return self.map[r][c] == 'l'
