@@ -1,5 +1,8 @@
 import arcade
-from models import World, Player, Witch
+from models import World, Player, Witch, Door
+
+# music = arcade.sound.load_sound('sound/backgroundmusic.wav')
+# arcade.sound.play_sound(music)
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
@@ -28,7 +31,9 @@ class BreadWindow(arcade.Window):
         self.hanzel_sprite = ModelSprite('images/hanzel.png',
                                          model=self.world.hanzel)
         self.witch_sprite = ModelSprite('images/witch.png',
-                                         model=self.world.witch)                            
+                                         model=self.world.witch)     
+        self.exitdoor_sprite = ModelSprite('images/exitdoor.png',
+                                         model=self.world.exitdoor)                                                          
 
     def update(self, delta):
         self.world.update(delta)
@@ -38,16 +43,41 @@ class BreadWindow(arcade.Window):
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                         SCREEN_WIDTH, SCREEN_HEIGHT,
                                         texture=arcade.load_texture('images/back.jpeg'))
-            # arcade.draw_text("Press any Key to Start", 250, 500,
+            # arcade.draw_text("Press SPACE to Enter", 250, 500,
             #              arcade.color.BLACK, 35)
+            arcade.draw_text("Press (esc) to EXIT", 790, 765,
+                         arcade.color.VIOLET_BLUE, 15)
+
+        elif self.world.state == World.INSTRUCTION:
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                        SCREEN_WIDTH, SCREEN_HEIGHT,
+                                        texture=arcade.load_texture('images/instructionbackground.png'))
+            arcade.draw_text("Press (esc) to EXIT", 790, 765,
+                         arcade.color.VIOLET_BLUE, 15)
+
+        elif self.world.state == World.CHARACTER:
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                        SCREEN_WIDTH, SCREEN_HEIGHT,
+                                        texture=arcade.load_texture('images/characterbackground.png'))
+            arcade.draw_text("Press (esc) to EXIT", 790, 765,
+                         arcade.color.VIOLET_BLUE, 15)
+                                        
         elif self.world.state == World.DEAD:
             arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                         SCREEN_WIDTH, SCREEN_HEIGHT,
                                         texture=arcade.load_texture('images/gameoverbackground.png'))
-            arcade.draw_text("GAME OVER", 300, 500,
-                         arcade.color.BLACK, 40)
-            arcade.draw_text("RESTART", 300, 300,
-                         arcade.color.BLACK, 40)
+            arcade.draw_text("Press SPACE to Restart", 200, 200,
+                         arcade.color.VIOLET_RED, 35)
+            arcade.draw_text("Press (esc) to EXIT", 790, 765,
+                         arcade.color.VIOLET_BLUE, 15)
+
+        elif self.world.state == World.WINNER:
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                        SCREEN_WIDTH, SCREEN_HEIGHT,
+                                        texture=arcade.load_texture('images/winnerbackground.png'))
+            arcade.draw_text("Press (esc) to EXIT", 790, 765,
+                         arcade.color.VIOLET_BLUE, 15)
+    
             
  
     def on_draw(self):
@@ -59,7 +89,7 @@ class BreadWindow(arcade.Window):
     # def background(self):
     #     arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
     #                                     SCREEN_WIDTH, SCREEN_HEIGHT,
-    #                                     texture=arcade.load_texture('images/background.png'))
+    #                                     texture=arcade.load_texture('images/instructionbackground.png'))
 
     def state_start(self):
         # self.background()
@@ -79,21 +109,30 @@ class BreadWindow(arcade.Window):
         hanzel_lives = f"Hanzel's lives: {self.world.hanzel_lives}"
         arcade.draw_text(hanzel_lives, 60, self.height - 25,
                          arcade.color.SKY_MAGENTA, 14)
+        
+        arcade.draw_text("Press (esc) to EXIT", 750, 30,
+                         arcade.color.VIOLET_BLUE, 15)
 
-        self.draw_door()
         self.draw_donut()
         self.draw_lava()
         self.draw_wall()
         self.gretel_sprite.draw()
         self.hanzel_sprite.draw()
         self.witch_sprite.draw()
+        self.exitdoor_sprite.draw()
         
     def on_key_press(self, key, key_modifiers):
-         self.world.on_key_press_gretel(key, key_modifiers)
-         self.world.on_key_press_hanzel(key, key_modifiers)
-         self.world.on_key_press(key, key_modifiers)
-         if not self.world.state == World.DEAD:
-            self.world.state = World.START
+        if self.world.state < 3:
+            if key == arcade.key.SPACE:
+                self.world.state += 1   
+        elif self.world.state == 4 or self.world.state == 5:
+            if key == arcade.key.SPACE:
+                self.world.state = 1
+        if key == arcade.key.ESCAPE:
+            exit()
+
+        self.world.on_key_press_gretel(key, key_modifiers)
+        self.world.on_key_press_hanzel(key, key_modifiers)
 
     def on_key_release(self, key, key_modifiers):
          self.world.on_key_release(key, key_modifiers)
@@ -117,15 +156,6 @@ class BreadWindow(arcade.Window):
                 pp.draw()
             elif self.world.breadwall.has_enterdoor_at(y, x):
                 pp = ModelSprite('images/enterdoor.png', model=p)
-                pp.draw()
-
-
-    def draw_door(self):
-        for d in self.world.door_list:
-            x = (d.x-1)//40
-            y = (d.y)//40
-            if self.world.breadwall.has_exitdoor_at(y, x):
-                pp = ModelSprite('images/exitdoor.png', model=d)
                 pp.draw()
 
     def draw_lava(self):

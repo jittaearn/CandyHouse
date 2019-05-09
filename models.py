@@ -1,10 +1,10 @@
 import arcade.key
 
 GRAVITY = -1
-JUMP_VY = 10
+JUMP_VY = 9
 MAX_VX = 4
 ACCX = 2
-PLAYER_RADIUS = 50
+PLAYER_RADIUS = 84
 WITCH_RADIUS = 60
 PLATFORM_MARGIN = 5
 
@@ -48,12 +48,13 @@ class Player(Model):
                 self.y = 717
 
     def jump(self):
-        if self.jump_count <= 2:
-            self.is_jump = True
-            self.vy = JUMP_VY
-            self.jump_count += 1
+        # if self.is_hitting_platform(self.platform):
+            if self.jump_count <= 2:
+                self.is_jump = True
+                self.vy = JUMP_VY
+                self.jump_count += 1
 
-        arcade.sound.play_sound()
+        # arcade.sound.play_sound()
 
     def set_platform(self, platform):
         self.is_jump = False
@@ -69,6 +70,10 @@ class Player(Model):
             return True
 
         return False
+
+    def is_hitting_platform(self, platform):
+        if self.top_y() > platform.y:
+            return True
 
     def is_falling_on_platform(self, platform):
         if not platform.in_block_range(self.x):
@@ -87,7 +92,7 @@ class Player(Model):
         return None    
 
     def top_y(self):
-        return self.y - (PLAYER_RADIUS // 2)
+        return self.y + (PLAYER_RADIUS // 2)
 
     def bottom_y(self):
         return self.y - (PLAYER_RADIUS // 2)
@@ -140,6 +145,13 @@ class Witch(Model):
     def incontact_witch(self, player):
         return abs(self.x - player.x) < 40 and abs(self.y - player.y) < 40
 
+class Door(Model):
+    def __init__(self, world, x, y):
+        super().__init__(world, x, y)
+        
+    def incontact_door(self, player):
+        return abs(self.x - player.x) < 60 and abs(self.y - player.y) < 60
+
 class Chocolatelava():
     def __init__(self, world, x, y, width, height):
         self.world = world
@@ -164,16 +176,6 @@ class Donut:
     def pick(self, player):
         return abs(self.x - player.x) < 40 and abs(self.y - player.y) < 40
 
-class Door:
-    def __init__(self, world, x, y, width, height):
-        self.world = world
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-
-    def incontact_door(self, player):
-        return abs(self.x - player.x) < 40 and abs(self.y - player.y) < 40
 
 class Platform:
     def __init__(self, world, x, y, width, height):
@@ -187,18 +189,21 @@ class Platform:
         return self.x - self.width//2 <= x <= self.x + self.width//2
 
 class World:
-    START = 0
-    DEAD = 1
-    FROZEN = 2
+    FROZEN = 0
+    INSTRUCTION = 1
+    CHARACTER = 2
+    START = 3
+    DEAD = 4
+    WINNER = 5
     def __init__(self, width, height):
         self.width = width
         self.height = height
         self.breadwall = BreadWall(self)
-        self.gretel = Player(self, 210, self.height - 190)
-        self.hanzel = Player(self, 240, self.height - 190)
+        self.gretel = Player(self, 210, self.height - 198)
+        self.hanzel = Player(self, 240, self.height - 198)
         self.witch = Witch(self, 500, 500)
-        self.wall, self.pink_donut_list , self.blue_donut_list, \
-            self.chocolava_list, self.door_list = self.gen_wall()
+        self.exitdoor = Door(self, self.width - 150 ,230)
+        self.wall, self.pink_donut_list , self.blue_donut_list, self.chocolava_list = self.gen_wall()
         self.state = World.FROZEN
         self.gretel_score = 0 
         self.hanzel_score = 0 
@@ -210,13 +215,11 @@ class World:
         pink_donut_list =[]
         blue_donut_list =[]
         chocolava_list =[]
-        door_list = []
         for r in range(len(self.breadwall.map)):
             for c in range(len(self.breadwall.map[0])):
                 if self.breadwall.map[r][c] != ' ' and self.breadwall.map[r][c] != 'o' and \
                     self.breadwall.map[r][c] != '.' and self.breadwall.map[r][c] != 'c' and \
-                    self.breadwall.map[r][c] != 'w' and self.breadwall.map[r][c] != 'l' and \
-                    self.breadwall.map[r][c] != 'g':
+                    self.breadwall.map[r][c] != 'w' and self.breadwall.map[r][c] != 'l':
                     p = Platform(self, (c+1) * 40, r * 40, 40, 60)
                     breadwall_lst.append(p)
                 elif self.breadwall.map[r][c] == 'o':
@@ -234,11 +237,8 @@ class World:
                 elif self.breadwall.map[r][c] == 'w':
                     l = Chocolatelava(self, (c+1) * 40, r * 40, 40, 40)
                     chocolava_list.append(l)
-                elif self.breadwall.map[r][c] == 'g':
-                    g = Door(self, (c+1) * 40, r * 40, 40, 40)
-                    door_list.append(g)
 
-        return breadwall_lst, pink_donut_list, blue_donut_list, chocolava_list, door_list
+        return breadwall_lst, pink_donut_list, blue_donut_list, chocolava_list
 
     def update(self, delta):
         self.is_dead()
@@ -249,11 +249,13 @@ class World:
             self.check_lives()
             self.check_donut_collection()
             self.check_chocolava()
-            self.check_door()
 
     def is_dead(self):
         if self.gretel_lives == 0 or self.hanzel_lives == 0:
-                self.state = World.DEAD
+            self.state = World.DEAD
+        elif (self.gretel_score == 5 and self.exitdoor.incontact_door(self.gretel)) and\
+            (self.hanzel_score == 5 and self.exitdoor.incontact_door(self.hanzel)):
+            self.state = World.WINNER
 
     def check_lives(self):
         if self.gretel_lives >= 1 and self.hanzel_lives >= 1:
@@ -288,11 +290,6 @@ class World:
                 self.hanzel_lives -= 1
                 self.hanzel.x = 150
                 self.hanzel.y = self.height - 195
-
-    def check_door(self):
-        if (self.door_list[0].incontact_door(self.gretel) and self.gretel_score == 4)\
-             or (self.door_list[0].incontact_door(self.hanzel) and self.hanzel_score == 4):
-            self.state = World.DEAD
         
     def on_key_press_gretel(self, key, key_modifiers):
         if key == arcade.key.UP:
@@ -310,10 +307,6 @@ class World:
         if key == arcade.key.D:
             self.hanzel.direction = DIR_RIGHT
 
-    def on_key_press(self, key, key_modifiers):
-        if key == arcade.key.SPACE:
-            self.gretel.direction = DIR_STILL
-
     def on_key_release(self, key, key_modifers):
         self.gretel.direction = DIR_STILL
         self.hanzel.direction = DIR_STILL
@@ -324,19 +317,19 @@ class BreadWall:
                      '                        ',
                      '########################',
                      '#llllllllllllllllllllll#',
-                     '#---   ---- -- --------#',
-                     '# o --- .              #',
-                     '#                   h  #',
+                     '#------  ---- -- ------#',
+                     '#   o ---- .           #',
                      '#                      #',
-                     '#____  ________________#',
-                     '# o                  . #',
+                     '#                      #',
+                     '#______  ______________#',
+                     '# .           o      . #',
                      '#                      #',
                      '#===============  =====#',
-                     '# .                  o #',
+                     '#  o               . o #',
                      '#                      #',
                      '#_______  _____________#',
                      '#                 o .  #',
-                     '#  g                   #',
+                     '#  e                   #',
                      '#                      #',
                      '########################',
                      '                        ',]
@@ -364,8 +357,5 @@ class BreadWall:
     def has_bluedonut_at(self, r, c):
         return self.map[r][c] == 'o'
     
-    def has_exitdoor_at(self, r, c):
-        return self.map[r][c] == 'g'
-
     def has_enterdoor_at(self, r, c):
-        return self.map[r][c] == 'h'
+        return self.map[r][c] == 'e'
