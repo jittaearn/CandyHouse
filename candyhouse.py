@@ -37,6 +37,17 @@ class BreadWindow(arcade.Window):
 
     def update(self, delta):
         self.world.update(delta)
+    
+    def restart(self):
+        self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.gretel_sprite = ModelSprite('images/gretel.png',
+                                         model=self.world.gretel)
+        self.hanzel_sprite = ModelSprite('images/hanzel.png',
+                                         model=self.world.hanzel)
+        self.witch_sprite = ModelSprite('images/witch.png',
+                                         model=self.world.witch)     
+        self.exitdoor_sprite = ModelSprite('images/exitdoor.png',
+                                         model=self.world.exitdoor)
 
     def draw_menu_screen(self):
         if self.world.state == World.FROZEN:
@@ -91,24 +102,29 @@ class BreadWindow(arcade.Window):
         arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                         SCREEN_WIDTH - 50, SCREEN_HEIGHT-125,
                                         texture=arcade.load_texture('images/creambackground.jpg'))
+        arcade.draw_texture_rectangle(700, 770, 380, 55,
+                                        texture=arcade.load_texture('images/scorebar_gretel.png'))
+        arcade.draw_texture_rectangle(300, 770, 380, 55,
+                                        texture=arcade.load_texture('images/scorebar_hanzel.png'))
 
     def state_start(self):
         self.background()
-        gretel_score = f"Gretel's Donut: {self.world.gretel_score}"
-        arcade.draw_text(gretel_score, self.width - 200, self.height - 48,
-                         arcade.color.BROWN, 14)
-    
-        hanzel_score = f"Hanzel's Donut: {self.world.hanzel_score}"
-        arcade.draw_text(hanzel_score, 60, self.height - 48,
-                         arcade.color.SKY_MAGENTA, 14)
+        hanzel_lives = f"{self.world.hanzel_lives}"
+        arcade.draw_text(hanzel_lives, 215, self.height - 40,
+                         arcade.color.FLUORESCENT_ORANGE, 14)
+            
+        hanzel_score = f"{self.world.hanzel_score}"
+        arcade.draw_text(hanzel_score, 370, self.height - 40,
+                         arcade.color.FLUORESCENT_ORANGE, 14)
 
-        gretel_lives = f"Gretel's lives: {self.world.gretel_lives}"
-        arcade.draw_text(gretel_lives, self.width - 200, self.height - 25,
-                         arcade.color.BROWN, 14)
+        gretel_score = f"{self.world.gretel_score}"
+        arcade.draw_text(gretel_score, 620, self.height - 40,
+                         arcade.color.FLUORESCENT_ORANGE, 14)
 
-        hanzel_lives = f"Hanzel's lives: {self.world.hanzel_lives}"
-        arcade.draw_text(hanzel_lives, 60, self.height - 25,
-                         arcade.color.SKY_MAGENTA, 14)
+        gretel_lives = f"{self.world.gretel_lives}"
+        arcade.draw_text(gretel_lives, 770, self.height - 40,
+                         arcade.color.FLUORESCENT_ORANGE, 14)
+
         
         arcade.draw_text("Press (esc) to EXIT", 750, 30,
                          arcade.color.VIOLET_BLUE, 15)
@@ -127,7 +143,7 @@ class BreadWindow(arcade.Window):
                 self.world.state += 1   
         if self.world.state == 4 or self.world.state == 5:
             if key == arcade.key.ENTER:
-                self.world.state = World.START
+                self.world.state = 3
         if key == arcade.key.ESCAPE:
             exit()
 

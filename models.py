@@ -194,6 +194,7 @@ class World:
     START = 3
     DEAD = 4
     WINNER = 5
+    RESTART = 6
     def __init__(self, width, height):
         self.width = width
         self.height = height
