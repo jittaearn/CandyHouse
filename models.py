@@ -70,10 +70,6 @@ class Player(Model):
 
         return False
 
-    # def is_hitting_platform(self, platform):
-    #     if self.top_y() > platform.y:
-    #         return True
-
     def is_falling_on_platform(self, platform):
         if not platform.in_block_range(self.x):
             return False
@@ -258,16 +254,10 @@ class World:
     def is_dead(self):
         if self.gretel_lives == 0 or self.hanzel_lives == 0:
             self.state = World.DEAD
+            print(self.state)
         elif (self.gretel_score == 5 and self.exitdoor.incontact_door(self.gretel)) and\
             (self.hanzel_score == 5 and self.exitdoor.incontact_door(self.hanzel)):
             self.state = World.WINNER
-
-    # def play_sound(self):
-    #     if self.gretel_lives == 0 or self.hanzel_lives == 0:
-    #         arcade.sound.play_sound(self.dead_state)
-    #     elif (self.gretel_score == 5 and self.exitdoor.incontact_door(self.gretel)) and\
-    #         (self.hanzel_score == 5 and self.exitdoor.incontact_door(self.hanzel)):
-    #         arcade.sound.play_sound(self.win_state)
 
     def check_lives(self):
         if self.gretel_lives >= 1 and self.hanzel_lives >= 1:
@@ -325,6 +315,10 @@ class World:
             self.hanzel.direction = DIR_LEFT
         if key == arcade.key.D:
             self.hanzel.direction = DIR_RIGHT
+
+    def on_key_press(self, key, key_modifiers):
+        if key == arcade.key.SPACE:
+            pass
 
     def on_key_release(self, key, key_modifers):
         self.gretel.direction = DIR_STILL

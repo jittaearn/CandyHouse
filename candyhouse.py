@@ -141,9 +141,9 @@ class BreadWindow(arcade.Window):
         if self.world.state < 3:
             if key == arcade.key.SPACE:
                 self.world.state += 1   
-        if self.world.state == 4 or self.world.state == 5:
-            if key == arcade.key.ENTER:
-                self.world.state = 3
+        if self.world.state == 4 and self.world.state == 5:
+            if key == arcade.key.SPACE:
+                self.world.state = World.START
         if key == arcade.key.ESCAPE:
             exit()
 
